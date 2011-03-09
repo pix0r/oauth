@@ -458,7 +458,6 @@ class Kohana_OAuth_Request {
 	 * @return  string   request response body
 	 * @uses    OAuth_Request::check
 	 * @uses    Arr::get
-	 * @uses    Remote::get
 	 */
 	public function execute(array $options = NULL)
 	{
