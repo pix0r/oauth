@@ -459,7 +459,7 @@ class Kohana_OAuth_Request {
 	 * @uses    OAuth_Request::check
 	 * @uses    Arr::get
 	 */
-	public function execute(array $options = NULL)
+	public function execute()
 	{
 		// Check that all required fields are set
 		$this->check();
@@ -467,33 +467,18 @@ class Kohana_OAuth_Request {
 		// Get the URL of the request
 		$url = $this->url;
 
-		if ( ! isset($options[CURLOPT_CONNECTTIMEOUT]))
-		{
-			// Use the request default timeout
-			$options[CURLOPT_CONNECTTIMEOUT] = $this->timeout;
-		}
+		$request = Request::factory($url);
 
 		if ($this->send_header)
 		{
-			// Get the the current headers
-			$headers = Arr::get($options, CURLOPT_HTTPHEADER, array());
-
-			// Add the Authorization header
-			$headers[] = 'Authorization: '.$this->as_header();
-
-			// Store the new headers
-			$options[CURLOPT_HTTPHEADER] = $headers;
+			$request->headers('Authorization', $this->as_header());
 		}
 
 		if ($this->method === 'POST')
 		{
-			// Send the request as a POST
-			$options[CURLOPT_POST] = TRUE;
-
 			if ($post = $this->as_query(NULL, empty($this->upload)))
 			{
-				// Attach the post fields to the request
-				$options[CURLOPT_POSTFIELDS] = $post;
+				$request->body($post);
 			}
 		}
 		elseif ($query = $this->as_query())
@@ -502,8 +487,6 @@ class Kohana_OAuth_Request {
 			$url = "{$url}?{$query}";
 		}
 
-		$request = Request::factory($url);
-		$request->get_client()->options($options);
 		return $request->execute();
 	}
 
