@@ -467,7 +467,8 @@ class Kohana_OAuth_Request {
 		// Get the URL of the request
 		$url = $this->url;
 
-		$request = Request::factory($url);
+		$request = Request::factory($url)
+			->method($this->method);
 
 		if ($this->send_header)
 		{
